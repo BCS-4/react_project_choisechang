@@ -6,9 +6,16 @@ import { IoCloseCircle } from "react-icons/io5";
 
 interface MintModalProps {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  metadataArray: NftMetadata[];
+  setMetadataArray: Dispatch<SetStateAction<NftMetadata[]>>;
 }
 
-const MintModal: FC<MintModalProps> = ({ setIsOpen }) => {
+const MintModal: FC<MintModalProps> = ({
+  setIsOpen,
+  metadataArray,
+  setMetadataArray,
+}) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [metadata, setMetadata] = useState<NftMetadata>();
   const { mintNftContract, account } = useOutletContext<OutletContext>();
 
@@ -16,9 +23,9 @@ const MintModal: FC<MintModalProps> = ({ setIsOpen }) => {
     try {
       if (!mintNftContract || !account) return;
 
-      //   const response = await mintNftContract.methods
-      //     .mintNFT()
-      //     .send({ from: account });
+      setIsLoading(true);
+
+      await mintNftContract.methods.mintNFT().send({ from: account });
 
       // @ts-expect-error
       const balance = await mintNftContract.methods.balanceOf(account).call();
@@ -36,14 +43,18 @@ const MintModal: FC<MintModalProps> = ({ setIsOpen }) => {
       const response = await axios.get(metadataURI);
 
       setMetadata(response.data);
+      setMetadataArray([response.data, ...metadataArray]);
+
+      setIsLoading(false);
     } catch (err) {
       console.error(err);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-50 flex justify-center items-center">
-      <div className="p-8 bg-white rounded-xl relative">
+      <div className="p-8 bg-white rounded-xl shadow-lg relative">
         <div className="mb-4">
           <button
             className="absolute -top-3 -right-3"
@@ -59,8 +70,10 @@ const MintModal: FC<MintModalProps> = ({ setIsOpen }) => {
               src={metadata.image}
               alt={metadata.name}
             />
-            <div className="font-semibold mt-1">{metadata.name}</div>
-            <div className="mt-1">{metadata.description}</div>
+            <div className="font-semibold mt-1 text-center">
+              {metadata.name}
+            </div>
+            <div className="mt-1 text-center">{metadata.description}</div>
             <ul className="mt-1 flex flex-wrap gap-1">
               {metadata.attributes.map((v, i) => (
                 <li key={i}>
@@ -80,7 +93,7 @@ const MintModal: FC<MintModalProps> = ({ setIsOpen }) => {
           </div>
         ) : (
           <>
-            <div>NFT를 민팅하시겠습니까?</div>
+            <div>{isLoading ? "Loading ..." : "NFT를 민팅하시겠습니까?"}</div>
             <div className="text-center mt-4">
               <button className="hover:text-gray-500" onClick={onClickMint}>
                 확인
