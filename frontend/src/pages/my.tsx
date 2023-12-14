@@ -1,15 +1,17 @@
 import { FC, useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { NftMetadata, OutletContext } from "../types";
 import MintModal from "../components/MintModal";
-import axios from "axios";
 import MyNftCard from "../components/MyNftCard";
+import axios from "axios";
 
 const My: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [metadataArray, setMetadataArray] = useState<NftMetadata[]>([]);
 
   const { mintNftContract, account } = useOutletContext<OutletContext>();
+
+  const navigate = useNavigate();
 
   const onClickMintModal = () => {
     if (!account) {
@@ -37,7 +39,7 @@ const My: FC = () => {
 
         const metadataURI: string = await mintNftContract.methods
           // @ts-expect-error
-          .tokenURI(Number(tokenId))
+          .tokenURI(Number(balance) - i)
           .call();
 
         const response = await axios.get(metadataURI);
@@ -53,6 +55,12 @@ const My: FC = () => {
   useEffect(() => {
     getMyNFTs();
   }, [mintNftContract, account]);
+
+  useEffect(() => {
+    if (account) return;
+
+    navigate("/");
+  }, [account]);
 
   return (
     <>

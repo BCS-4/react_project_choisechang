@@ -1,36 +1,14 @@
-import { FC, useState } from "react";
-import { Link } from "react-router-dom";
+import { FC } from "react";
+import NftCard, { NftCardProps } from "./NftCard";
 
-interface MyNftCardProps {
-  image: string;
-  name: string;
-  tokenId: number;
-}
+interface MyNftCardProps extends NftCardProps {}
 
-const MyNftCard: FC<MyNftCardProps> = ({ image, name, tokenId }) => {
-  const [isHover, setIsHover] = useState<boolean>(false);
-
-  const onMouseEnter = () => {
-    setIsHover(true);
-  };
-  const onMouseLeave = () => {
-    setIsHover(false);
-  };
-
+const MyNftCard: FC<MyNftCardProps> = ({ tokenId, image, name }) => {
   return (
-    <Link to={`/detail/${tokenId}`}>
-      <li
-        className="relative"
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-      >
-        <img src={image} alt={name} />
-        <div className="font-semibold mt-1 text-center">{name}</div>
-        {isHover && (
-          <div className="absolute top-0 left-0 w-full h-full bg-white bg-opacity-50"></div>
-        )}
-      </li>
-    </Link>
+    <div>
+      <NftCard tokenId={tokenId} image={image} name={name} />
+      <div>판매 등록 기능</div>
+    </div>
   );
 };
 
