@@ -1,13 +1,85 @@
-import { FC } from "react";
+import { FC, FormEvent, useEffect, useState } from "react";
 import NftCard, { NftCardProps } from "./NftCard";
+import { MINT_NFT_CONTRACT } from "../abis/contractAddress";
+import { useOutletContext } from "react-router-dom";
+import { OutletContext } from "../types";
 
-interface MyNftCardProps extends NftCardProps {}
+interface MyNftCardProps extends NftCardProps {
+  saleStatus: boolean;
+}
 
-const MyNftCard: FC<MyNftCardProps> = ({ tokenId, image, name }) => {
+const MyNftCard: FC<MyNftCardProps> = ({
+  tokenId,
+  image,
+  name,
+  saleStatus,
+}) => {
+  const [price, setPrice] = useState<string>("");
+  const [registedPrice, setRegistedPrice] = useState<number>(0);
+
+  const { saleNftContract, account, web3 } = useOutletContext<OutletContext>();
+
+  const onSubmitForSale = async (e: FormEvent) => {
+    try {
+      e.preventDefault();
+
+      if (isNaN(+price)) return;
+
+      const response = await saleNftContract.methods
+        .setForSaleNFT(
+          // @ts-expect-error
+          MINT_NFT_CONTRACT,
+          tokenId,
+          web3.utils.toWei(Number(price), "ether")
+        )
+        .send({ from: account });
+
+      setRegistedPrice(+price);
+      setPrice("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getRegistedPrice = async () => {
+    try {
+      // @ts-expect-error
+      const response = await saleNftContract.methods.nftPrices(tokenId).call();
+
+      setRegistedPrice(Number(web3.utils.fromWei(Number(response), "ether")));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (!saleNftContract) return;
+
+    getRegistedPrice();
+  }, [saleNftContract]);
+
   return (
     <div>
       <NftCard tokenId={tokenId} image={image} name={name} />
-      <div>판매 등록 기능</div>
+      {registedPrice ? (
+        <div>{registedPrice} ETH</div>
+      ) : (
+        saleStatus && (
+          <form onSubmit={onSubmitForSale}>
+            <input
+              type="text"
+              className="border-2 mr-2"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+            <input
+              type="submit"
+              value="등 록"
+              className="hover:text-gray-500"
+            />
+          </form>
+        )
+      )}
     </div>
   );
 };

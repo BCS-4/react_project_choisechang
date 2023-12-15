@@ -4,10 +4,12 @@ import { NftMetadata, OutletContext } from "../types";
 import MintModal from "../components/MintModal";
 import MyNftCard from "../components/MyNftCard";
 import axios from "axios";
+import { SALE_NFT_CONTRACT } from "../abis/contractAddress";
 
 const My: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [metadataArray, setMetadataArray] = useState<NftMetadata[]>([]);
+  const [saleStatus, setSaleStatus] = useState<boolean>(false);
 
   const { mintNftContract, account } = useOutletContext<OutletContext>();
 
@@ -20,6 +22,19 @@ const My: FC = () => {
     }
 
     setIsOpen(true);
+  };
+
+  const onClickSaleStatus = async () => {
+    try {
+      const response = await mintNftContract.methods
+        // @ts-expect-error
+        .setApprovalForAll(SALE_NFT_CONTRACT, !saleStatus)
+        .send({ from: account });
+
+      setSaleStatus(!saleStatus);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const getMyNFTs = async () => {
@@ -39,7 +54,7 @@ const My: FC = () => {
 
         const metadataURI: string = await mintNftContract.methods
           // @ts-expect-error
-          .tokenURI(Number(balance) - i)
+          .tokenURI(Number(tokenId))
           .call();
 
         const response = await axios.get(metadataURI);
@@ -52,9 +67,27 @@ const My: FC = () => {
     }
   };
 
+  const getSaleStatus = async () => {
+    try {
+      const isApproved: boolean = await mintNftContract.methods
+        // @ts-expect-error
+        .isApprovedForAll(account, SALE_NFT_CONTRACT)
+        .call();
+
+      setSaleStatus(isApproved);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     getMyNFTs();
   }, [mintNftContract, account]);
+
+  useEffect(() => {
+    if (!account) return;
+    getSaleStatus();
+  }, [account]);
 
   useEffect(() => {
     if (account) return;
@@ -65,7 +98,10 @@ const My: FC = () => {
   return (
     <>
       <div className="grow">
-        <div className="text-right p-2">
+        <div className="flex justify-between p-2">
+          <button className="hover:text-gray-500" onClick={onClickSaleStatus}>
+            Sale Approved: {saleStatus ? "TRUE" : "FALSE"}
+          </button>
           <button className="hover:text-gray-500" onClick={onClickMintModal}>
             Mint
           </button>
@@ -80,6 +116,7 @@ const My: FC = () => {
               image={v.image}
               name={v.name}
               tokenId={v.tokenId!}
+              saleStatus={saleStatus}
             />
           ))}
         </ul>
