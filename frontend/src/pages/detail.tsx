@@ -1,10 +1,14 @@
 import { FC, useEffect, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
-import { NftMetadata, OutletContext } from "../types";
 import axios from "axios";
+import { FaArrowLeftLong } from "react-icons/fa6";
+
+import { NftMetadata, OutletContext } from "../types";
 
 const Detail: FC = () => {
   const [metadata, setMetadata] = useState<NftMetadata>();
+  const [xDeg, setXDeg] = useState<number>(0);
+  const [yDeg, setYDeg] = useState<number>(0);
 
   const { tokenId } = useParams();
 
@@ -29,6 +33,16 @@ const Detail: FC = () => {
     }
   };
 
+  const onMouseMoveImage = (e: any) => {
+    setXDeg(e.clientY * (5 / 128) - 30);
+    setYDeg(e.clientX * (-5 / 128) + 20);
+  };
+
+  const onMouseLeaveImage = () => {
+    setXDeg(0);
+    setYDeg(0);
+  };
+
   useEffect(() => {
     getMyNFT();
   }, [mintNftContract]);
@@ -36,14 +50,26 @@ const Detail: FC = () => {
   return (
     <div className="grow flex justify-center items-center relative">
       <button
-        className="absolute top-8 left-8 hover:text-gray-500"
+        className="absolute top-8 left-8 hover:text-gray-500 text-2xl flex justify-center items-center font-bold gap-2"
         onClick={() => navigate(-1)}
       >
-        Back
+        <FaArrowLeftLong /> BACK
       </button>
       {metadata && (
-        <div className="w-60">
-          <img className="w-60 h-60" src={metadata.image} alt={metadata.name} />
+        <div className="flex flex-col justify-center items-center">
+          <div
+            onMouseMove={onMouseMoveImage}
+            onMouseLeave={onMouseLeaveImage}
+            style={{
+              transform: `perspective(500px) rotateX(${xDeg}deg) rotateY(${yDeg}deg)`,
+            }}
+          >
+            <img
+              className="w-100 h-100"
+              src={metadata.image}
+              alt={metadata.name}
+            />
+          </div>
           <div className="font-semibold mt-1 text-center">{metadata.name}</div>
           <div className="mt-1 text-center">{metadata.description}</div>
           <ul className="mt-1 flex flex-wrap gap-1">
