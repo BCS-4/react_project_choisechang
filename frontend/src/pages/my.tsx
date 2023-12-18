@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import axios from "axios";
+
 import { NftMetadata, OutletContext } from "../types";
 import MintModal from "../components/MintModal";
 import MyNftCard from "../components/MyNftCard";
-import axios from "axios";
 import { SALE_NFT_CONTRACT } from "../abis/contractAddress";
 
 const My: FC = () => {
@@ -86,6 +87,7 @@ const My: FC = () => {
 
   useEffect(() => {
     if (!account) return;
+
     getSaleStatus();
   }, [account]);
 
@@ -99,15 +101,29 @@ const My: FC = () => {
     <>
       <div className="grow">
         <div className="flex justify-between p-2">
-          <button className="hover:text-gray-500" onClick={onClickSaleStatus}>
-            Sale Approved: {saleStatus ? "TRUE" : "FALSE"}
+          <button
+            className="bg-gray-700 font-bold text-xl px-4 py-2 rounded-full"
+            onClick={onClickSaleStatus}
+          >
+            {saleStatus ? (
+              <div className="text-green-500 hover:animate-pulse">
+                Sale Approved : ON
+              </div>
+            ) : (
+              <div className="text-red-500 animate-pulse">
+                Sale Approved : OFF
+              </div>
+            )}
           </button>
-          <button className="hover:text-gray-500" onClick={onClickMintModal}>
+          <button
+            className="bg-gray-700 text-cyan-300 font-bold text-xl rounded-full px-4 hover:animate-bounce"
+            onClick={onClickMintModal}
+          >
             Mint
           </button>
         </div>
         <div className="text-center py-8">
-          <h1 className="font-bold text-2xl">My NFTs</h1>
+          <h1 className="font-bold text-2xl">{`< My NFTs >`}</h1>
         </div>
         <ul className="p-8 grid grid-cols-2 gap-8">
           {metadataArray?.map((v, i) => (

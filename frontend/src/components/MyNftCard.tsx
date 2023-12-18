@@ -1,7 +1,8 @@
 import { FC, FormEvent, useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
+
 import NftCard, { NftCardProps } from "./NftCard";
 import { MINT_NFT_CONTRACT } from "../abis/contractAddress";
-import { useOutletContext } from "react-router-dom";
 import { OutletContext } from "../types";
 
 interface MyNftCardProps extends NftCardProps {
@@ -62,20 +63,22 @@ const MyNftCard: FC<MyNftCardProps> = ({
     <div>
       <NftCard tokenId={tokenId} image={image} name={name} />
       {registedPrice ? (
-        <div>{registedPrice} ETH</div>
+        <div className="flex justify-center font-bold mt-2 border-2 border-black rounded-full w-32 mx-auto">
+          {registedPrice} ETH
+        </div>
       ) : (
         saleStatus && (
-          <form onSubmit={onSubmitForSale}>
+          <form className="flex justify-center mt-2" onSubmit={onSubmitForSale}>
             <input
               type="text"
-              className="border-2 mr-2"
               value={price}
+              className="rounded-full w-32 border-2 mr-2"
               onChange={(e) => setPrice(e.target.value)}
             />
             <input
               type="submit"
               value="등 록"
-              className="hover:text-gray-500"
+              className="border-2 rounded-full px-2 border-black font-bold hover:text-yellow-400 hover:bg-gray-500"
             />
           </form>
         )

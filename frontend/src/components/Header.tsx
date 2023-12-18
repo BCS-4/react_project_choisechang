@@ -1,6 +1,8 @@
 import { useSDK } from "@metamask/sdk-react";
 import { Dispatch, FC, SetStateAction } from "react";
 import { Link } from "react-router-dom";
+import { FaSignOutAlt, FaWallet } from "react-icons/fa";
+import { FaHouse, FaSackDollar, FaUser } from "react-icons/fa6";
 
 interface HeaderProps {
   account: string;
@@ -22,24 +24,38 @@ const Header: FC<HeaderProps> = ({ account, setAccount }) => {
 
   return (
     <header className="p-2 flex justify-between">
-      <div className="flex gap-4">
-        <Link to="/">Home</Link>
-        <Link to="/my">My</Link>
-        <Link to="/sale">Sale</Link>
+      <div className="flex gap-4 text-3xl font-bold mt-1">
+        <Link to="/">
+          <FaHouse className="hover:text-purple-500" />
+        </Link>
+        <Link to="/my">
+          <FaUser className="hover:text-sky-500" />
+        </Link>
+        <Link to="/sale">
+          <FaSackDollar className="hover:text-yellow-500" />
+        </Link>
       </div>
       <div>
         {account ? (
-          <div>
-            <span>
-              {account.substring(0, 7)}...
+          <div className="text-xl flex font-bold">
+            <span className="flex items-center hover:text-gray-500">
+              <FaWallet />: {account.substring(0, 7)}...
               {account.substring(account.length - 5)}
             </span>
-            <button className="ml-2" onClick={() => setAccount("")}>
-              Logout
+            <button
+              className="ml-2 text-3xl hover:text-gray-500"
+              onClick={() => setAccount("")}
+            >
+              <FaSignOutAlt />
             </button>
           </div>
         ) : (
-          <button onClick={onClickMetaMask}>MetaMask Login</button>
+          <button
+            className="bg-amber-300 hover:bg-amber-500 font-bold text-xl rounded-full px-4 py-1"
+            onClick={onClickMetaMask}
+          >
+            🦊 Login
+          </button>
         )}
       </div>
     </header>

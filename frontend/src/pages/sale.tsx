@@ -1,7 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { NftMetadata, OutletContext } from "../types";
 import axios from "axios";
+
+import { NftMetadata, OutletContext } from "../types";
 import SaleNftCard from "../components/SaleNftCard";
 
 const Sale: FC = () => {
@@ -43,7 +44,7 @@ const Sale: FC = () => {
   return (
     <div className="grow">
       <div className="text-center py-8">
-        <h1 className="font-bold text-2xl">Sale NFTs</h1>
+        <h1 className="font-bold text-2xl">{`< Sale NFTs >`}</h1>
       </div>
       <ul className="p-8 grid grid-cols-2 gap-8">
         {metadataArray?.map((v, i) => (

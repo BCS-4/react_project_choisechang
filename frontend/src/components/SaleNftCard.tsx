@@ -1,6 +1,7 @@
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
-import NftCard, { NftCardProps } from "./NftCard";
 import { useOutletContext } from "react-router-dom";
+
+import NftCard, { NftCardProps } from "./NftCard";
 import { NftMetadata, OutletContext } from "../types";
 import { MINT_NFT_CONTRACT } from "../abis/contractAddress";
 
@@ -28,7 +29,11 @@ const SaleNftCard: FC<SaleNftCardProps> = ({
         .ownerOf(tokenId)
         .call();
 
-      if (!account || nftOwner.toLowerCase() === account.toLowerCase()) return;
+      if (!account || nftOwner.toLowerCase() === account.toLowerCase()) {
+        alert("It's your NFT!");
+
+        return;
+      }
 
       const response = await saleNftContract.methods
         // @ts-expect-error
@@ -70,9 +75,12 @@ const SaleNftCard: FC<SaleNftCardProps> = ({
   return (
     <div>
       <NftCard tokenId={tokenId} image={image} name={name} />
-      <div>
-        {registedPrice} ETH <button onClick={onClickPurchase}>구매</button>
-      </div>
+      <button
+        className="flex justify-center font-bold mt-2 border-2 border-black rounded-full px-4 mx-auto hover:bg-gray-500 hover:text-yellow-400"
+        onClick={onClickPurchase}
+      >
+        {registedPrice} ETH
+      </button>
     </div>
   );
 };

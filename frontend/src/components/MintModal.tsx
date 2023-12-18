@@ -1,8 +1,10 @@
 import { Dispatch, FC, SetStateAction, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { NftMetadata, OutletContext } from "../types";
 import axios from "axios";
 import { IoCloseCircle } from "react-icons/io5";
+
+import { NftMetadata, OutletContext } from "../types";
+import { FaSpinner } from "react-icons/fa6";
 
 interface MintModalProps {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -60,7 +62,7 @@ const MintModal: FC<MintModalProps> = ({
             className="absolute -top-3 -right-3"
             onClick={() => setIsOpen(false)}
           >
-            <IoCloseCircle className="w-7 h-7 hover:text-gray-500" />
+            <IoCloseCircle className="w-7 h-7 hover:text-red-500" />
           </button>
         </div>
         {metadata ? (
@@ -84,7 +86,7 @@ const MintModal: FC<MintModalProps> = ({
             </ul>
             <div className="text-center mt-4 ">
               <button
-                className="hover:text-gray-500"
+                className="bg-gray-700 text-white hover:text-cyan-300 text-md font-bold rounded-full px-2"
                 onClick={() => setIsOpen(false)}
               >
                 OK
@@ -93,9 +95,20 @@ const MintModal: FC<MintModalProps> = ({
           </div>
         ) : (
           <>
-            <div>{isLoading ? "Loading ..." : "NFT를 민팅하시겠습니까?"}</div>
+            <div>
+              {isLoading ? (
+                <div className="flex items-center gap-2 text-2xl">
+                  Loading <FaSpinner className="animate-spin" />
+                </div>
+              ) : (
+                "NFT를 민팅하시겠습니까?"
+              )}
+            </div>
             <div className="text-center mt-4">
-              <button className="hover:text-gray-500" onClick={onClickMint}>
+              <button
+                className="bg-gray-700 text-white hover:text-cyan-300 text-md font-bold rounded-full px-2"
+                onClick={onClickMint}
+              >
                 확인
               </button>
             </div>

@@ -34,8 +34,8 @@ const Detail: FC = () => {
   };
 
   const onMouseMoveImage = (e: any) => {
-    setXDeg(e.clientY * (5 / 128) - 30);
-    setYDeg(e.clientX * (-5 / 128) + 20);
+    setXDeg(e.clientY * (5 / 128) - 31);
+    setYDeg(e.clientX * (5 / 128) - 31);
   };
 
   const onMouseLeaveImage = () => {
@@ -46,6 +46,8 @@ const Detail: FC = () => {
   useEffect(() => {
     getMyNFT();
   }, [mintNftContract]);
+
+  useEffect(() => console.log(yDeg), [yDeg]);
 
   return (
     <div className="grow flex justify-center items-center relative">
